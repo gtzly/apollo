@@ -42,7 +42,7 @@ bool DetectionComponent::Init() {
       comp_config.lidar2novatel_tf2_child_frame_id();
   lidar_query_tf_offset_ =
       static_cast<float>(comp_config.lidar_query_tf_offset());
-  enable_hdmap_ = comp_config.enable_hdmap();
+//  enable_hdmap_ = comp_config.enable_hdmap();
   writer_ = node_->CreateWriter<LidarFrameMessage>(output_channel_name_);
 
   if (!InitAlgorithmPlugin()) {
@@ -54,7 +54,8 @@ bool DetectionComponent::Init() {
 
 bool DetectionComponent::Proc(
     const std::shared_ptr<drivers::PointCloud>& message) {
-  AINFO << "Enter detection component, message timestamp: "
+  AINFO << std::setprecision(16)
+        << "Enter detection component, message timestamp: "
         << message->measurement_time() << " current timestamp: "
         << apollo::common::time::Clock::NowInSeconds();
 
@@ -81,8 +82,8 @@ bool DetectionComponent::InitAlgorithmPlugin() {
   }
   lidar::LidarObstacleDetectionInitOptions init_options;
   init_options.sensor_name = sensor_name_;
-  init_options.enable_hdmap_input =
-      FLAGS_obs_enable_hdmap_input && enable_hdmap_;
+//  init_options.enable_hdmap_input =
+//      FLAGS_obs_enable_hdmap_input && enable_hdmap_;
   if (!detector_->Init(init_options)) {
     AINFO << "sensor_name_ "
           << "Failed to init detection.";
@@ -104,9 +105,11 @@ bool DetectionComponent::InternalProc(
   const double timestamp = in_message->measurement_time();
   const double cur_time = apollo::common::time::Clock::NowInSeconds();
   const double start_latency = (cur_time - timestamp) * 1e3;
-  AINFO << "FRAME_STATISTICS:Lidar:Start:msg_time[" << timestamp << sensor_name_
-        << ":Start:msg_time["
-        << "]:cur_time[" << cur_time << "]:cur_latency[" << start_latency
+  AINFO << std::setprecision(16)
+        << "FRAME_STATISTICS:Lidar:Start:msg_time[" << timestamp
+        << "]:sensor[" << sensor_name_
+        << "]:cur_time[" << cur_time
+        << "]:cur_latency[" << start_latency
         << "]";
 
   out_message->timestamp_ = timestamp;
